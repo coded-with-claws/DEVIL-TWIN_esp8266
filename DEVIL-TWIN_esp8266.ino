@@ -8,7 +8,7 @@ extern "C" {
 #include "user_interface.h"
 }
 
-#define WIFI_SSID "Bbox-D404"
+#define WIFI_SSID "Bbox-D404C839"
 #define WIFI_PWD "devil8266"
 
 typedef struct
