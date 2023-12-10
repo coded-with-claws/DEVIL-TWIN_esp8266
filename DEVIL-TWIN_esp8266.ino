@@ -141,7 +141,9 @@ String _tempHTML = "<html><head><meta name='viewport' content='initial-scale=1.0
                    "<button style='background-color: black; border: 5px solid red; border-radius: 10px; padding: 14px 28px; font-size: 15px; cursor: pointer; color: white; display:inline-block;'{disabled}>{deauth_button}</button></form>"
                    "<form style='display:inline-block; padding-left:8px;' method='post' action='/?hotspot={hotspot}'>"
                    "<button style='background-color: black; border: 5px solid red; border-radius: 10px; padding: 14px 28px; font-size: 15px; cursor: pointer; color: white'{disabled}>{hotspot_button}</button></form>"
-                   "<button style='background-color: black; border: 5px solid red; border-radius: 10px; padding: 14px 28px; font-size: 15px; cursor: pointer; color: white' onclick='window.location.reload();'>Refresh WIFI</button></center>"
+                   "<button style='background-color: black; border: 5px solid red; border-radius: 10px; padding: 14px 28px; font-size: 15px; cursor: pointer; color: white' onclick='window.location.reload();'>Refresh WIFI</button>"
+                   "<form style='display:inline-block; padding-left:8px;' method='post' action='/?restart'>"
+                   "<button style='background-color: black; border: 5px solid red; border-radius: 10px; padding: 14px 28px; font-size: 15px; cursor: pointer; color: white'>Restart ESP</button></form></center>"
 
                    "</div></br><center><table><tr><th>SSID</th><th>BSSID</th><th>-dBm</th><th>Select</th></tr></center>";
 
@@ -153,6 +155,10 @@ void handleIndex() {
         _selectedNetwork = _networks[i];
       }
     }
+  }
+
+  if (webServer.hasArg("restart")) {
+    ESP.restart();
   }
 
   if (webServer.hasArg("deauth")) {
