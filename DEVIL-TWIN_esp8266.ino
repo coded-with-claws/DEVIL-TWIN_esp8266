@@ -376,7 +376,7 @@ void loop() {
   dnsServer.processNextRequest();
   webServer.handleClient();
 
-  if (deauthing_active && millis() - deauth_now >= 500) {
+  if (deauthing_active && millis() - deauth_now >= 100) {
 
     wifi_set_channel(_selectedNetwork.ch);
     /*Serial.println(_selectedNetwork.ch);
